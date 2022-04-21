@@ -25,7 +25,9 @@ describe("Given I am connected as an employee", () => {
       window.onNavigate(ROUTES_PATH.Bills)
       await waitFor(() => screen.getByTestId('icon-window'))
       const windowIcon = screen.getByTestId('icon-window')
+      const hasClass = windowIcon.classList.contains('active-icon');
       //to-do write expect expression
+      expect(hasClass).toBe(true)
 
     })
     test("Then bills should be ordered from earliest to latest", () => {
