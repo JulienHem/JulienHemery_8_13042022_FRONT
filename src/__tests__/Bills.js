@@ -7,6 +7,7 @@ import BillsUI from "../views/BillsUI.js"
 import { bills } from "../fixtures/bills.js"
 import {ROUTES, ROUTES_PATH} from "../constants/routes.js";
 import {localStorageMock} from "../__mocks__/localStorage.js";
+import mockedStore from "../__mocks__/store.js";
 
 import router from "../app/Router.js";
 import Bills from "../containers/Bills.js";
@@ -61,5 +62,41 @@ describe("Given I am connected as an employee", () => {
       expect(show).toEqual('show');
 
     })
+    test('Then the method getbills should return bills', () => {
+
+      const bill = new Bills({document, onNavigate: null, store: mockedStore, localStorage:null})
+      bill.getBills()
+          .then(data => {
+            expect(data).toEqual(bills)
+          })
+    })
   })
+
+  // TEST D'INTEGRATION BILLS
+  describe("When I navigate to Bills", () => {
+    test("fetches bills from mock API GET", () => {
+      const onNavigate = (pathname) => {
+        document.body.innerHTML = ROUTES({ pathname })
+      }
+
+      Object.defineProperty(window, 'localStorage', { value: localStorageMock })
+      window.localStorage.setItem('user', JSON.stringify({
+        type: 'Employee'
+      }))
+      const root = document.createElement("div")
+      root.setAttribute("id", "root")
+      document.body.append(root)
+      router()
+      window.onNavigate(ROUTES_PATH.Bills)
+      const contentType = screen.getAllByTestId("tbody")
+
+      const bill = new Bills({document, onNavigate, store:null, localStorage:null})
+
+      console.log(contentType)
+
+    })
+  })
+
 })
+
+
