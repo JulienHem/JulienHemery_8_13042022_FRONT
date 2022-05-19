@@ -57,10 +57,8 @@ describe("Given I am connected as an employee", () => {
 
     })
     test('Then the method getbills should return bills', () => {
-
-      //TODO CHANGER LES DATES
       const bill = new Bills({document, onNavigate: null, store: mockedStore, localStorage: null})
-      bill.getBills()
+      return bill.getBills()
           .then(data => {
             expect(data).toEqual(dateConvertedBills)
           })
