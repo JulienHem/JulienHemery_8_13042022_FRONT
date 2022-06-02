@@ -30,6 +30,7 @@ export default class NewBill {
         const fileExtension = fileNameSplit[fileNameSplit.length - 1]
 
         if (fileExtension === 'jpg' || fileExtension === 'jpeg' || fileExtension === 'png') {
+
             this.store
                 .bills()
                 .create({
@@ -52,6 +53,8 @@ export default class NewBill {
     handleSubmit = e => {
         if (!this.fileName) return;
         e.preventDefault()
+        console.log('ici')
+
         console.log('e.target.querySelector(`input[data-testid="datepicker"]`).value', e.target.querySelector(`input[data-testid="datepicker"]`).value)
         const email = JSON.parse(localStorage.getItem("user")).email
         const bill = {

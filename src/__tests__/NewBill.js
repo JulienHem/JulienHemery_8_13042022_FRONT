@@ -2,14 +2,11 @@
  * @jest-environment jsdom
  */
 
-import {fireEvent, screen} from "@testing-library/dom"
+import {fireEvent} from "@testing-library/dom"
 import NewBillUI from "../views/NewBillUI.js"
 import NewBill from "../containers/NewBill.js"
 import mockedStore from "../__mocks__/store.js";
 import userEvent from "@testing-library/user-event";
-import {localStorageMock} from "../__mocks__/localStorage.js";
-import BillsUI from "../views/BillsUI.js";
-import {bills} from "../fixtures/bills.js";
 
 
 describe("Given I am connected as an employee", () => {
@@ -35,6 +32,7 @@ describe("Given I am connected as an employee", () => {
 
         test('When I choose a new file in an incorrect format, there should be an alert', () => {
             const fileFalse = new File(['testFile'], 'testFile.txt', {type: 'text/txt'})
+            console.log(fileFalse)
             userEvent.upload(fileInput, fileFalse);
             expect(handleChangeFile).toHaveBeenCalled();
             expect(fileInput.files[0]).toStrictEqual(fileFalse);
@@ -43,16 +41,16 @@ describe("Given I am connected as an employee", () => {
         })
     })
     describe('When a bill is created', () => {
-        test("if the form is correct", () => {
+        it("should send the bill correctly", () => {
 
             window.localStorage.setItem('user', JSON.stringify({
                 type: 'Employee'
             }))
 
-            const html = NewBillUI();
-            document.body.innerHTML = html;
+            document.body.innerHTML = NewBillUI();
 
             const newBill = new NewBill({document})
+            newBill.fileName = "salut.jpg"
             const handleSubmit = jest.fn(newBill.handleSubmit);
             const formNewBill = document.querySelector(`form[data-testid="form-new-bill"]`)
             formNewBill.addEventListener('submit', handleSubmit);
@@ -60,6 +58,7 @@ describe("Given I am connected as an employee", () => {
             expect(handleSubmit).toHaveBeenCalled()
         })
     })
+
 
     // TEST D'INTEGRATION BILLS
     // describe("Given I am a user connected as Admin", () => {
