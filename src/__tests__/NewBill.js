@@ -40,6 +40,27 @@ describe("Given I am connected as an employee", () => {
             expect(window.alert).toHaveBeenCalled();
         })
     })
+    describe('When the input is getting a file', () => {
+        it("should expect the file to be correct", () => {
+
+            window.localStorage.setItem('user', JSON.stringify({
+                type: 'Employee'
+            }))
+
+            const onNavigate = () => {}
+
+            const newBill = new NewBill({ document, onNavigate: onNavigate, store: null, localStorage: window.localStorage })
+
+            document.body.innerHTML = NewBillUI();
+
+            newBill.fileName = "salut.jpg"
+            const handleChange = jest.fn(newBill.handleChangeFile);
+            const inputBill = document.querySelector(`input[data-testid="file"]`)
+            inputBill.addEventListener('change', handleChange);
+            fireEvent.change(inputBill)
+            expect(handleChange).toHaveBeenCalled()
+        })
+    })
     describe('When a bill is created', () => {
         it("should send the bill correctly", () => {
 
@@ -47,9 +68,12 @@ describe("Given I am connected as an employee", () => {
                 type: 'Employee'
             }))
 
+            const onNavigate = () => {}
+
+            const newBill = new NewBill({ document, onNavigate: onNavigate, store: null, localStorage: window.localStorage })
+
             document.body.innerHTML = NewBillUI();
 
-            const newBill = new NewBill({document})
             newBill.fileName = "salut.jpg"
             const handleSubmit = jest.fn(newBill.handleSubmit);
             const formNewBill = document.querySelector(`form[data-testid="form-new-bill"]`)
@@ -59,34 +83,4 @@ describe("Given I am connected as an employee", () => {
         })
     })
 
-
-    // TEST D'INTEGRATION BILLS
-    // describe("Given I am a user connected as Admin", () => {
-    //     describe("When I navigate to Bills", () => {
-    //         test("fetches bills from mock API GET", async () => {
-    //             const getSpy = jest.spyOn(store, "create")
-    //             const bills = await store.create()
-    //             expect(getSpy).toHaveBeenCalledTimes(1)
-    //             expect(bills.data.length).toBe(1)
-    //         })
-    //         test("fetches bills from an API and fails with 404 message error", async () => {
-    //             store.create.mockImplementationOnce(() =>
-    //                 Promise.reject(new Error("Erreur 404"))
-    //             )
-    //             const html = BillsUI({error: "Erreur 404"})
-    //             document.body.innerHTML = html
-    //             const message = await screen.getByText(/Erreur 404/)
-    //             expect(message).toBeTruthy()
-    //         })
-    //         test("fetches messages from an API and fails with 500 message error", async () => {
-    //             store.create.mockImplementationOnce(() =>
-    //                 Promise.reject(new Error("Erreur 500"))
-    //             )
-    //             const html = BillsUI({error: "Erreur 500"})
-    //             document.body.innerHTML = html
-    //             const message = await screen.getByText(/Erreur 500/)
-    //             expect(message).toBeTruthy()
-    //         })
-    //     })
-    // })
 })

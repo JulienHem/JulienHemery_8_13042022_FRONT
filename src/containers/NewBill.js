@@ -23,8 +23,8 @@ export default class NewBill {
         const fileName = filePath[filePath.length - 1]
         const formData = new FormData()
         const email = JSON.parse(localStorage.getItem("user")).email
-        formData.append('file', file)
-        formData.append('email', email)
+        formData.append('file', file);
+        formData.append('email', email);
 
         const fileNameSplit = fileName.split('.');
         const fileExtension = fileNameSplit[fileNameSplit.length - 1]
@@ -53,7 +53,6 @@ export default class NewBill {
     handleSubmit = e => {
         if (!this.fileName) return;
         e.preventDefault()
-        console.log('ici')
 
         console.log('e.target.querySelector(`input[data-testid="datepicker"]`).value', e.target.querySelector(`input[data-testid="datepicker"]`).value)
         const email = JSON.parse(localStorage.getItem("user")).email
