@@ -2,12 +2,18 @@
  * @jest-environment jsdom
  */
 
-import {fireEvent} from "@testing-library/dom"
+import {fireEvent, screen} from "@testing-library/dom"
 import NewBillUI from "../views/NewBillUI.js"
 import NewBill from "../containers/NewBill.js"
-import mockedStore from "../__mocks__/store.js";
+import mockedStore from "../__mocks__/store"
 import userEvent from "@testing-library/user-event";
+import {ROUTES_PATH} from "../constants/routes.js";
+import mockStore from "../__mocks__/store.js";
+import {localStorageMock} from "../__mocks__/localStorage.js";
+import router from "../app/Router.js";
+import BillsUI from "../views/BillsUI.js";
 
+jest.mock("../app/store", () => mockedStore)
 
 describe("Given I am connected as an employee", () => {
     describe("When I am on NewBill Page", () => {
@@ -69,17 +75,64 @@ describe("Given I am connected as an employee", () => {
             }))
 
             const onNavigate = () => {}
-
             const newBill = new NewBill({ document, onNavigate: onNavigate, store: null, localStorage: window.localStorage })
-
             document.body.innerHTML = NewBillUI();
-
             newBill.fileName = "salut.jpg"
             const handleSubmit = jest.fn(newBill.handleSubmit);
             const formNewBill = document.querySelector(`form[data-testid="form-new-bill"]`)
             formNewBill.addEventListener('submit', handleSubmit);
             fireEvent.submit(formNewBill)
             expect(handleSubmit).toHaveBeenCalled()
+        })
+    })
+    describe('When a bill is created and it fails', () => {
+        beforeEach(() => {
+            jest.spyOn(mockStore, "bills")
+            Object.defineProperty(
+                window,
+                'localStorage',
+                {value: localStorageMock}
+            )
+            window.localStorage.setItem('user', JSON.stringify({
+                type: 'Employee',
+                email: "e@e"
+            }))
+            const root = document.createElement("div")
+            root.setAttribute("id", "root")
+            document.body.appendChild(root)
+            router()
+        })
+        test("fetches bills from an API and fails with 500 message error", async () => {
+
+
+            mockedStore.bills.mockImplementationOnce(() => {
+                return {
+                    create: () => {
+                        return Promise.reject(new Error("Erreur 500"))
+                    }
+                }
+            })
+
+            document.body.innerHTML = BillsUI({ error: "Erreur 500"});
+            await new Promise(process.nextTick);
+            const message = await screen.getByText(/Erreur 500/)
+            expect(message).toBeTruthy()
+        })
+        test("fetches bills from an API and fails with 500 message error", async () => {
+
+
+            mockedStore.bills.mockImplementationOnce(() => {
+                return {
+                    create: () => {
+                        return Promise.reject(new Error("Erreur 404"))
+                    }
+                }
+            })
+
+            document.body.innerHTML = BillsUI({ error: "Erreur 404"});
+            await new Promise(process.nextTick);
+            const message = await screen.getByText(/Erreur 404/)
+            expect(message).toBeTruthy()
         })
     })
 
